@@ -71,7 +71,8 @@ app.get('/', (req, res) => {
       login: '/login',
       employees: '/employees',
       shifts: '/shifts'
-    }
+    },
+    madeWith: 'love by MANYA SHUKLA 2025'
   });
 });
 
