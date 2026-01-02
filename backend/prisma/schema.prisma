@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   email     String   @unique
   password  String
   role      String   // "admin" or "user"
@@ -25,7 +25,7 @@ model User {
 }
 
 model Employee {
-  id           String   @id @default(cuid())
+  id           String   @id @default(cuid()) @map("_id")
   name         String
   employeeCode String   @unique
   department   String
@@ -39,7 +39,7 @@ model Employee {
 }
 
 model Shift {
-  id         String   @id @default(cuid())
+  id         String   @id @default(cuid()) @map("_id")
   date       String   // Format: YYYY-MM-DD
   startTime  String   // Format: HH:mm
   endTime    String   // Format: HH:mm
