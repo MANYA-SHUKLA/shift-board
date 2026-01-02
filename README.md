@@ -96,7 +96,7 @@ Shift Board is a full-stack application that enables:
 | **Node.js** | 18+ | Runtime environment |
 | **Express.js** | 4.18.2 | Web framework |
 | **Prisma** | 5.19.0 | ORM and database toolkit |
-| **SQLite** | Latest | Database (development) |
+| **MongoDB** | Latest | Database (via MongoDB Atlas) |
 | **JWT** | 9.0.2 | Authentication tokens |
 | **bcryptjs** | 2.4.3 | Password hashing |
 | **express-validator** | 7.0.1 | Request validation |
@@ -164,18 +164,17 @@ cp .env.example .env
 ```env
 PORT=3001
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL="mongodb://localhost:27017/shiftboard"
+# Or use MongoDB Atlas: mongodb+srv://user:pass@cluster.mongodb.net/shiftboard?retryWrites=true&w=majority
 ```
 
 ```bash
 # Generate Prisma client
 npm run db:generate
 
-# Run database migrations
-npm run db:migrate
-
 # Seed the database with initial data
 npm run db:seed
+# Note: MongoDB doesn't use migrations - just generate and seed!
 
 # Start the development server
 npm run dev
@@ -524,9 +523,7 @@ shift-board/
 ├── backend/                          # Backend API server
 │   ├── prisma/                       # Database configuration
 │   │   ├── schema.prisma            # Prisma schema (database models)
-│   │   ├── seed.js                  # Database seed script
-│   │   ├── dev.db                   # SQLite database file
-│   │   └── migrations/              # Database migrations
+│   │   └── seed.js                  # Database seed script
 │   ├── src/
 │   │   ├── config/
 │   │   │   └── database.js          # Prisma client configuration
@@ -654,9 +651,9 @@ npm start                # Start production server
 
 # Database
 npm run db:generate      # Generate Prisma client
-npm run db:migrate       # Run database migrations
 npm run db:seed          # Seed database with initial data
 npm run db:studio        # Open Prisma Studio (database GUI)
+# Note: MongoDB doesn't use migrations - just generate and seed!
 ```
 
 #### Frontend Scripts
@@ -695,7 +692,7 @@ npm run lint             # Run ESLint
    ```bash
    # After modifying schema.prisma
    npm run db:generate
-   npm run db:migrate
+   # MongoDB is schema-less, no migrations needed!
    ```
 
 ### Environment Variables
@@ -720,11 +717,11 @@ npm run lint             # Run ESLint
 
 ### Backend Issues
 
-#### Database not found
+#### Database connection error
 ```bash
-# Solution: Run migrations
-cd backend
-npm run db:migrate
+# Solution: Check DATABASE_URL in .env file
+# For local: mongodb://localhost:27017/shiftboard
+# For Atlas: mongodb+srv://user:pass@cluster.mongodb.net/shiftboard?retryWrites=true&w=majority
 ```
 
 #### Prisma client not generated
@@ -795,72 +792,107 @@ npm run build
 
 ## 🚀 Deployment
 
-### Quick Deploy (Recommended)
+### Quick Deploy (Recommended - MongoDB + Render)
 
 **Fastest way to get your app live (~10 minutes):**
 
-1. **Backend**: Deploy to [Railway](https://railway.app) or [Render](https://render.com)
-2. **Frontend**: Deploy to [Vercel](https://vercel.com)
+1. **Database**: Create MongoDB Atlas cluster (Free tier)
+2. **Backend**: Deploy to [Render](https://render.com) (Free tier available)
+3. **Frontend**: Deploy to [Vercel](https://vercel.com) (Free tier)
+
+📖 **Detailed Guides:**
+- **[MONGODB_QUICK_START.md](./MONGODB_QUICK_START.md)** - 5-minute quick start
+- **[MONGODB_DEPLOYMENT.md](./MONGODB_DEPLOYMENT.md)** - Complete step-by-step guide
 
 ### Deployment Options
 
+#### Database
+- ⭐ **MongoDB Atlas** - Recommended, free tier (M0), 512 MB storage
+- **Render MongoDB** - If available on Render platform
+
 #### Backend Platforms
-- ⭐ **Railway** - Easiest, auto-detects Node.js
-- **Render** - Free tier available, PostgreSQL included
+- ⭐ **Render** - Recommended, free tier available
+- **Railway** - Easy setup, auto-detects Node.js
 - **Heroku** - Classic platform, requires credit card
 - **DigitalOcean** - App Platform or Droplets
 
 #### Frontend Platforms
-- ⭐ **Vercel** - Best for Next.js, zero config
+- ⭐ **Vercel** - Best for Next.js, zero config, free tier
 - **Netlify** - Great alternative, easy setup
-- **Railway** - Can host both frontend and backend
+- **Render** - Can host both frontend and backend
 
-### Quick Start Commands
+### Quick Start (MongoDB + Render)
 
-**Backend (Railway/Render):**
+**Database (MongoDB Atlas):**
 ```bash
-# Procfile already created
-# Just connect your repo and set environment variables:
-# - PORT (auto-set)
-# - JWT_SECRET
-# - DATABASE_URL (PostgreSQL)
+# 1. Sign up at MongoDB Atlas
+# 2. Create free M0 cluster
+# 3. Create database user
+# 4. Configure network access (allow 0.0.0.0/0)
+# 5. Get connection string: mongodb+srv://user:pass@cluster.mongodb.net/shiftboard?retryWrites=true&w=majority
 ```
 
-**Frontend (Vercel):**
+**Backend on Render:**
 ```bash
-# Just connect your repo and set:
-# - NEXT_PUBLIC_API_URL (your backend URL)
+# 1. Create Web Service, connect GitHub repo
+# 2. Root Directory: backend
+# 3. Build Command: npm install && npm run db:generate
+# 4. Start Command: npm start
+# 5. Environment variables:
+#    - DATABASE_URL (MongoDB Atlas connection string)
+#    - JWT_SECRET (your secret key)
+#    - NODE_ENV=production
+# 6. After deployment, run in Shell: npm run db:seed
+```
+
+**Frontend on Vercel:**
+```bash
+# 1. Import GitHub repo
+# 2. Root Directory: frontend
+# 3. Environment variable:
+#    - NEXT_PUBLIC_API_URL (your Render backend URL)
+# 4. Deploy automatically
 ```
 
 ### Production Checklist
 
-- ✅ Use PostgreSQL instead of SQLite
+- ✅ Create MongoDB Atlas cluster (free tier M0)
 - ✅ Set strong `JWT_SECRET` (32+ characters)
-- ✅ Enable HTTPS (automatic on most platforms)
+- ✅ Enable HTTPS (automatic on Render/Vercel)
 - ✅ Configure CORS for production domain
-- ✅ Set up database backups
+- ✅ Set up database backups (MongoDB Atlas provides)
 - ✅ Monitor application logs
 - ✅ Use environment variables for all secrets
-
+- ✅ Run `db:seed` after first deployment
 
 ---
 
-### Deployment Steps
+### Deployment Steps (MongoDB + Render)
 
-1. **Deploy Backend** to Railway or Render:
-   - Connect your GitHub repository
+1. **Create MongoDB Database**:
+   - Sign up at MongoDB Atlas
+   - Create free M0 cluster
+   - Create database user
+   - Configure network access
+   - Copy connection string
+
+2. **Deploy Backend** to Render:
+   - Create Web Service, connect GitHub repo
    - Set root directory to `backend`
+   - Set build command: `npm install && npm run db:generate`
+   - Set start command: `npm start`
    - Add environment variables (JWT_SECRET, DATABASE_URL)
-   - Add PostgreSQL database
-   - Run migrations: `npm run db:migrate`
+   - After deployment, run in Shell: `npm run db:seed`
 
-2. **Deploy Frontend** to Vercel:
+3. **Deploy Frontend** to Vercel:
    - Connect your GitHub repository
    - Set root directory to `frontend`
-   - Add environment variable: `NEXT_PUBLIC_API_URL` (your backend URL)
+   - Add environment variable: `NEXT_PUBLIC_API_URL` (your Render backend URL)
    - Deploy automatically
 
-3. **Update CORS** in backend to allow your frontend domain
+4. **Update CORS** in backend:
+   - Add `FRONTEND_URL` environment variable in Render
+   - CORS is already configured in `server.js`
 
 ---
 
