@@ -17,11 +17,8 @@ export const metadata: Metadata = {
   title: "Shift Board - Employee Shift Management",
   description: "Manage employee shifts with role-based access",
   icons: {
-    icon: [
-      { url: '/icon.png', type: 'image/png' },
-      { url: '/favicon.ico', type: 'image/x-icon' },
-    ],
-    shortcut: '/favicon.ico',
+    icon: '/icon.png',
+    shortcut: '/icon.png',
     apple: '/icon.png',
   },
 };

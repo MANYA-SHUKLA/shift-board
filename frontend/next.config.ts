@@ -17,9 +17,6 @@ const nextConfig: NextConfig = {
   
   // React strict mode for better development experience
   reactStrictMode: true,
-  
-  // Optimize production builds
-  swcMinify: true, // Use SWC minifier (faster than Terser)
 };
 
 export default nextConfig;
