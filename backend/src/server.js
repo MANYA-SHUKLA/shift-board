@@ -61,6 +61,20 @@ app.use(cors({
   credentials: true
 }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Shift Board API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      login: '/login',
+      employees: '/employees',
+      shifts: '/shifts'
+    }
+  });
+});
+
 // Routes
 app.use('/login', authRoutes);
 app.use('/employees', employeeRoutes);
